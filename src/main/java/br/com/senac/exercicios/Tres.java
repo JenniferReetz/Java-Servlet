@@ -55,7 +55,7 @@ public class Tres extends HttpServlet {
             }
 
         } catch (NumberFormatException e) {
-            out.println("<h1> Erro: parâmetros inválidos. Use números em n1 e n2.</h1>");
+            out.println("<h1 style=\"color:red\"> Erro: parâmetros inválidos. Use números em n1 e n2.</h1>");
         }
     }
 
