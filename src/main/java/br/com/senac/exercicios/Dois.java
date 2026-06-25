@@ -18,7 +18,7 @@ public class Dois extends HttpServlet {
         if (pathInfo == null){
             mensagem = "<h1>Olá, Visitante! Seja bem-vindo.</h1>";
         } else if (pathInfo.substring(1).length() < 2) {
-            mensagem = "<h1>Erro: nome deve ter ao menos 2 caracteres.</h1>";
+            mensagem = "<h1 style=\"color:red\">Erro: nome deve ter ao menos 2 caracteres.</h1>";
         } else {
             mensagem = "<h1>Olá, "+pathInfo.substring(1)+"! Seja bem-vindo.</h1>";
         }
