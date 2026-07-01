@@ -27,10 +27,42 @@ public class Servlet extends HttpServlet {
             if (pathInfo == null || pathInfo.equals("/")) {
                 List<Time> times = dao.listarTodos();
                 resp.getWriter().println(gson.toJson(times));
+            } else {
+                int id = Integer.parseInt(pathInfo.substring(1));
+                Time time = dao.buscarPorId(id);
+                if (time != null){
+                    resp.getWriter().print(gson.toJson(time));
+                } else {
+                    resp.sendError(HttpServletResponse.SC_NOT_FOUND);
+                }
             }
         } catch (Exception e){
-            //
+            Erro erro = lancarErro("Erro ao listar", e);
+            resp.setStatus(500);
+            resp.getWriter().print(gson.toJson(erro));
         }
+    }
+
+    @Override
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        resp.setContentType("application/json");
+        String pathInfo =   req.getPathInfo();
+        try{
+            if (pathInfo != null && pathInfo.length() > 1){
+                int id = Integer.parseInt(pathInfo.substring(1));
+                boolean excluiu = dao.excluirPorId(id);
+                if (excluiu){
+                    resp.setStatus(HttpServletResponse.SC_NO_CONTENT);
+                }else {
+                    resp.sendError(HttpServletResponse.SC_NOT_FOUND);
+                }
+            }
+        } catch (Exception e){
+            Erro erro = lancarErro("Erro ao excluir", e);
+            resp.setStatus(500);
+            resp.getWriter().print(gson.toJson(erro));
+        }
+
     }
 
     @Override
@@ -43,7 +75,9 @@ public class Servlet extends HttpServlet {
             resp.getWriter().print(gson.toJson(criado));
 
         } catch (Exception e){
-            //
+            Erro erro = lancarErro("Erro ao inserir", e);
+            resp.setStatus(500);
+            resp.getWriter().print(gson.toJson(erro));
         }
     }
 
@@ -58,5 +92,27 @@ public class Servlet extends HttpServlet {
         }
 
         return gson.fromJson(sb.toString(),classe);
+    }
+
+    private Erro lancarErro(String msg, Exception e){
+        return new Erro(msg, e.getMessage());
+    }
+
+    @Override
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        resp.setContentType("application/json");
+        try{
+            Time time = lerCorpoJson(req, Time.class);
+            boolean atualizou = dao.atualizar(time);
+            if (atualizou){
+                resp.setStatus(HttpServletResponse.SC_NO_CONTENT);
+            }else {
+                resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            }
+        } catch (Exception e) {
+            Erro erro = lancarErro("Erro ao atualizar", e);
+            resp.setStatus(500);
+            resp.getWriter().print(gson.toJson(erro));
+        }
     }
 }
